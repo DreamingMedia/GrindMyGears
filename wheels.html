@@ -1,0 +1,101 @@
+<html>
+	<head>
+	<script src="./jquery-2.1.1.min.js"></script>
+	<script src="./jQueryRotate.js"></script>
+	
+	<script>
+		
+		$.fn.observe = function(eventName, callback) {
+    return this.each(function(){
+        var el = this;
+        $(document).on(eventName, function(){
+            callback.apply(el, arguments);
+        })
+    })
+}
+		
+		$( document ).ready( function(){
+			
+			$('#gear2').rotate( {angle:0} )
+			$('#gear1').rotate( {angle:0} )
+			
+			
+			$("#gear1").rotate({bind:{
+      	click: function(){
+      		var $obj = $(this )
+      		var lastAngle = $obj.getRotateAngle()[0]
+          $(this).rotate({
+            angle: 0, 
+            animateTo: 360 * 10,
+            duration:(10 * 100 * 8) * 10 ,
+            easing: function(x, t, b, c, d) { return b+(t/d)*c ; },
+            step: function( a ){ 
+            		var angleDelta = $obj.getRotateAngle()[0] - lastAngle            		
+            		lastAngle = $obj.getRotateAngle()[0]
+            		var arcLength = Math.abs( (2 * parseFloat($obj.attr('radius')) * Math.PI) * (angleDelta / 360.0) )
+            		$obj.trigger( 'rotate', { 'arcLength' : arcLength, 'a' : a } )
+            		  
+            		},
+          })
+      }
+  }
+})
+
+		$('#gear2').observe( 'rotate', function( e , d ) { 
+			
+			//console.log( 'in gear 2: arcLength =  ' + d.arcLength  )
+			var angleDelta = ( d.arcLength/(2 * parseFloat($(this).attr('radius')) * Math.PI) ) * 360
+			//console.log( $(this).getRotateAngle()[0] )
+			var newAngle =  $(this).getRotateAngle()[0] -  angleDelta 
+			//console.log( angleDelta )
+			
+			//console.log( -1 * newAngle % 360 + '  ' + $('#gear1').getRotateAngle()[0] % 360 )
+			g1 = -1 * newAngle % 360
+			g2 = $('#gear1').getRotateAngle()[0] % 360
+			if ( Math.abs( 270 - g1 ) < 2  &&  Math.abs( 270 - g2 ) < 2 ) {
+				alert( 'got it' )
+			}
+			
+			
+			$(this).rotate( {angle: newAngle} )
+			
+			}
+		)
+		
+		$('#grow' ).click( function(){
+				
+				var $obj = $('#gear1' )				
+				$obj.attr('radius', parseInt( $obj.attr('radius') ) + 3)
+				$obj.attr('width', parseInt( $obj.attr('radius') ) * 10)
+				
+				console.log( $obj.attr('radius') )
+				
+			})
+
+		$('#shrink' ).click( function(){
+				var $obj = $('#gear1' )				
+				$obj.attr('radius', parseInt( $obj.attr('radius') ) - 3)
+				$obj.attr('width', parseInt( $obj.attr('radius') ) * 10)
+
+			})
+			
+		} )
+		
+		</script>
+	</head>
+	<body>
+		
+		<a id="grow" href="#">grow</a>
+		<a id="shrink" href="#">shrink</a>
+		<br>		<br>		<br>		<br>		<br>
+		<table>
+			<tr>
+			<td valign="center"><img src="g1.png" id="gear1" width="100"  radius="10" /></td>
+			<td valign="center"><img src="g3.png" id="gear2" width="200"  radius="20"/></td>
+		
+			</tr>
+		</table>
+		
+		
+	</body>
+</html>
