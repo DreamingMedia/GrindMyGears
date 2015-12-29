@@ -30,14 +30,15 @@
 			
 			
 			
-			$("#gear1").rotate({bind:{
+			
+			$("#driverGear").rotate({bind:{
       	click: function(){
       		var $obj = $(this )
       		var lastAngle = $obj.getRotateAngle()[0]
           $(this).rotate({
             angle: 0, 
-            animateTo: 90,
-            duration:1000, //(10 * 100 * 8) * 10 ,
+            animateTo: 360 * 10,
+            duration:(10 * 100 * 8) * 10 ,
             easing: function(x, t, b, c, d) { return b+(t/d)*c ; },
             step: function( a ){ 
             		var angleDelta = $obj.getRotateAngle()[0] - lastAngle            		
@@ -59,9 +60,9 @@
 			var newAngle =  $(this).getRotateAngle()[0] -  angleDelta 
 			//console.log( angleDelta )
 			
-			//console.log( -1 * newAngle % 360 + '  ' + $('#gear1').getRotateAngle()[0] % 360 )
+			//console.log( -1 * newAngle % 360 + '  ' + $('#driverGear').getRotateAngle()[0] % 360 )
 			var myAngle = -1 * newAngle % 360
-			var driverGear = $('#gear1') 
+			var driverGear = $('#driverGear') 
 			var driverGearAngle = driverGear.getRotateAngle()[0] % 360
 			if ( Math.abs( 270 - myAngle ) < 2  &&  Math.abs( 270 - driverGearAngle ) < 2 ) {
 				alert( 'got it' )
@@ -82,7 +83,7 @@
 		
 		$('#grow' ).click( function(){
 				
-				var $obj = $('#gear1' )				
+				var $obj = $('#driverGear' )				
 				$obj.attr('radius', parseInt( $obj.attr('radius') ) + 2)
 				$obj.attr('width', parseInt( $obj.attr('radius') ) * 10)
 				
@@ -91,7 +92,7 @@
 			})
 
 		$('#shrink' ).click( function(){
-				var $obj = $('#gear1' )				
+				var $obj = $('#driverGear' )				
 				$obj.attr('radius', parseInt( $obj.attr('radius') ) - 2)
 				$obj.attr('width', parseInt( $obj.attr('radius') ) * 10)
 
