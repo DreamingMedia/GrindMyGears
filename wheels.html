@@ -19,15 +19,15 @@
 		}
 		$( document ).ready( function(){
 
-			// create the required number of slave gears with default config for now, and return an array
+			// create the required number of wheel gears with default config for now, and return an array
 			// of gears.
-			function appendAndCaptureSlaveGears(numGear) {
+			function appendAndCaptureWheels(numGear) {
 				for (var i = 0; i < numGear; i++ ){
-					$("#gears").append('<img src="g3.png" id="gear' + i + '" radius="20" class="slave"/>')
+					$("#gears").append('<img src="g3.png" id="gear' + i + '" radius="20" class="wheel"/>')
 				}
 
 				var retVal = [];
-				$(".slave").each(function(i, gear) {
+				$(".wheel").each(function(i, gear) {
 					retVal.push($(gear));
 				});
 
@@ -35,17 +35,17 @@
 			}
 
 
-			var numSlaves = 4;
+			var numWheels = 4;
 
 
 			var $gears = {
 				"$driver" : $("#driverGear"),
-				"slaves" : appendAndCaptureSlaveGears(numSlaves)
+				"wheels" : appendAndCaptureWheels(numWheels)
 			};
 
 
-			for (var i = 0; i < $gears.slaves.length; i++) {
-				$gears.slaves[i].rotate({angle: 0});
+			for (var i = 0; i < $gears.wheels.length; i++) {
+				$gears.wheels[i].rotate({angle: 0});
 			}
 
 			$gears.$driver.rotate({angle:0});
@@ -61,8 +61,8 @@
 
 			$gears.$driver.rotate({bind:{
 				click: function(){
-					var $obj = $(this )
-					var lastAngle = $obj.getRotateAngle()[0]
+					var $obj = $(this );
+					var lastAngle = $obj.getRotateAngle()[0];
 					$(this).rotate({
 						angle: 0,
 						animateTo: 360 * 10,
@@ -74,20 +74,20 @@
 							var arcLength = Math.abs( (2 * parseFloat($obj.attr('radius')) * Math.PI) * (angleDelta / 360.0) )
 							$obj.trigger( 'rotate', { 'arcLength' : arcLength, 'a' : a } )
 
-						},
+						}
 					})
       			}
   			}});
 
-			// each slave gear gets the ted magic formula referncing the gear on the left.
-			// Obviously slaves[0] needs to look at the driver gear
-			for (var i = 0; i < $gears.slaves.length; i++) {
-				$gears.slaves[i].observe('rotate', function(e, d) {
+			// each wheel gear gets the ted magic formula referencing the gear on the left.
+			// Obviously wheels[0] needs to look at the driver gear
+			for (var i = 0; i < $gears.wheels.length; i++) {
+				$gears.wheels[i].observe('rotate', function(e, d) {
 					var angleDelta = (d.arcLength/(2 * parseFloat($(this).attr('radius')) * Math.PI)) * 360;
 					var newAngle = $(this).getRotateAngle()[0] - angleDelta;
 
 					var myAngle = -1 * newAngle % 360;
-					var leftGear = i == 0 ? $gears.$driver : $gears.slaves[i - 1];
+					var leftGear = i == 0 ? $gears.$driver : $gears.wheels[i - 1];
 					var leftGearAngle = leftGear.getRotateAngle()[0] % 360;
 					if (GearsLineUp(myAngle, leftGearAngle)) {
 						alert('got one');
