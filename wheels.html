@@ -37,8 +37,8 @@
       		var lastAngle = $obj.getRotateAngle()[0]
           $(this).rotate({
             angle: 0, 
-            animateTo: 360 * 10,
-            duration:(10 * 100 * 8) * 10 ,
+            animateTo: 360 * 10 ,
+            duration: (10 * 100 * 8) * 10 ,
             easing: function(x, t, b, c, d) { return b+(t/d)*c ; },
             step: function( a ){ 
             		var angleDelta = $obj.getRotateAngle()[0] - lastAngle            		
@@ -75,6 +75,8 @@
 			// and then make my X location, just to the right 
 			// of the driver gear.
 			xDriverGear = driverGear.position().left
+			//console.log( 'left side thingy' )
+			//console.log( xDriverGear )
 
 			
 			
