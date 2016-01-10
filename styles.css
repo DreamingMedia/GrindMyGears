@@ -1,0 +1,7 @@
+/*for now, just simply line them up so that they are sitting right next to their friends*/
+#gears {
+    float: left;
+    margin: 5px;
+    display: inline-block;
+    vertical-align: middle;
+}

@@ -2,9 +2,9 @@
 	<head>
 	<script src="./jquery-2.1.1.min.js"></script>
 	<script src="./jQueryRotate.js"></script>
-	
+	<link rel="stylesheet" href="./styles.css" />
 	<script>
-		
+
 		$.fn.observe = function(eventName, callback) {
     return this.each(function(){
         var el = this;
@@ -13,16 +13,44 @@
         })
     })
 }
-		
+
+		function GearsLineUp(myAngle, leftGearAngle) {
+			return Math.abs( 270 - myAngle ) < 2  &&  Math.abs( 270 - leftGearAngle ) < 2
+		}
 		$( document ).ready( function(){
-			
-			var gear2 = $('#gear2')
-			var driverGear = $('#driverGear')
-			
-			gear2.rotate( {angle:0} )
-			driverGear.rotate( {angle:0} )
-			
-			var xOriginalDriverGear = driverGear.position().left
+
+			// create the required number of wheel gears with default config for now, and return an array
+			// of gears.
+			function appendAndCaptureWheels(numGear) {
+				for (var i = 0; i < numGear; i++ ){
+					$("#gears").append('<img src="g3.png" id="gear' + i + '" radius="20" class="wheel"/>')
+				}
+
+				var retVal = [];
+				$(".wheel").each(function(i, gear) {
+					retVal.push($(gear));
+				});
+
+				return retVal;
+			}
+
+
+			var numWheels = 4;
+
+
+			var $gears = {
+				"$driver" : $("#driverGear"),
+				"wheels" : appendAndCaptureWheels(numWheels)
+			};
+
+
+			for (var i = 0; i < $gears.wheels.length; i++) {
+				$gears.wheels[i].rotate({angle: 0});
+			}
+
+			$gears.$driver.rotate({angle:0});
+
+			var xOriginalDriverGear = $gears.$driver.position().left
 			console.log( 'xOriginalDriverGear' )
 			console.log( xOriginalDriverGear )
 			
@@ -30,59 +58,45 @@
 			
 			
 			
-			
-			$("#driverGear").rotate({bind:{
-      	click: function(){
-      		var $obj = $(this )
-      		var lastAngle = $obj.getRotateAngle()[0]
-          $(this).rotate({
-            angle: 0, 
-            animateTo: 360 * 10 ,
-            duration: (10 * 100 * 8) * 10 ,
-            easing: function(x, t, b, c, d) { return b+(t/d)*c ; },
-            step: function( a ){ 
-            		var angleDelta = $obj.getRotateAngle()[0] - lastAngle            		
-            		lastAngle = $obj.getRotateAngle()[0]
-            		var arcLength = Math.abs( (2 * parseFloat($obj.attr('radius')) * Math.PI) * (angleDelta / 360.0) )
-            		$obj.trigger( 'rotate', { 'arcLength' : arcLength, 'a' : a } )
-            		  
-            		},
-          })
-      }
-  }
-})
 
-		$('#gear2').observe( 'rotate', function( e , d ) { 
-			
-			//console.log( 'in gear 2: arcLength =  ' + d.arcLength  )
-			var angleDelta = ( d.arcLength/(2 * parseFloat($(this).attr('radius')) * Math.PI) ) * 360
-			//console.log( $(this).getRotateAngle()[0] )
-			var newAngle =  $(this).getRotateAngle()[0] -  angleDelta 
-			//console.log( angleDelta )
-			
-			//console.log( -1 * newAngle % 360 + '  ' + $('#driverGear').getRotateAngle()[0] % 360 )
-			var myAngle = -1 * newAngle % 360
-			var driverGear = $('#driverGear') 
-			var driverGearAngle = driverGear.getRotateAngle()[0] % 360
-			if ( Math.abs( 270 - myAngle ) < 2  &&  Math.abs( 270 - driverGearAngle ) < 2 ) {
-				alert( 'got it' )
+			$gears.$driver.rotate({bind:{
+				click: function(){
+					var $obj = $(this );
+					var lastAngle = $obj.getRotateAngle()[0];
+					$(this).rotate({
+						angle: 0,
+						animateTo: 360 * 10,
+						duration:(10 * 100 * 8) * 10 ,
+						easing: function(x, t, b, c, d) { return b+(t/d)*c ; },
+						step: function( a ){
+							var angleDelta = $obj.getRotateAngle()[0] - lastAngle
+							lastAngle = $obj.getRotateAngle()[0]
+							var arcLength = Math.abs( (2 * parseFloat($obj.attr('radius')) * Math.PI) * (angleDelta / 360.0) )
+							$obj.trigger( 'rotate', { 'arcLength' : arcLength, 'a' : a } )
+
+						}
+					})
+      			}
+  			}});
+
+			// each wheel gear gets the ted magic formula referencing the gear on the left.
+			// Obviously wheels[0] needs to look at the driver gear
+			for (var i = 0; i < $gears.wheels.length; i++) {
+				$gears.wheels[i].observe('rotate', function(e, d) {
+					var angleDelta = (d.arcLength/(2 * parseFloat($(this).attr('radius')) * Math.PI)) * 360;
+					var newAngle = $(this).getRotateAngle()[0] - angleDelta;
+
+					var myAngle = -1 * newAngle % 360;
+					var leftGear = i == 0 ? $gears.$driver : $gears.wheels[i - 1];
+					var leftGearAngle = leftGear.getRotateAngle()[0] % 360;
+					if (GearsLineUp(myAngle, leftGearAngle)) {
+						alert('got one');
+					}
+
+					$(this).rotate({angle: newAngle});
+				});
 			}
-			
-			
-			$(this).rotate( {angle: newAngle} )
 
-			// figure out the position of the dirver gear
-			// and then make my X location, just to the right 
-			// of the driver gear.
-			xDriverGear = driverGear.position().left
-			//console.log( 'left side thingy' )
-			//console.log( xDriverGear )
-
-			
-			
-			}
-		)
-		
 		$('#grow' ).click( function(){
 				
 				var $obj = $('#driverGear' )				
@@ -91,7 +105,7 @@
 				
 				console.log( $obj.attr('radius') )
 				
-			})
+			});
 
 		$('#shrink' ).click( function(){
 				var $obj = $('#driverGear' )				
@@ -108,15 +122,12 @@
 		
 		<a id="grow" href="#">grow me</a>
 		<a id="shrink" href="#">shrink me</a>
-		<br>		<br>		<br>		<br>		<br>
-		<table>
-			<tr>
-			<td valign="center"><img src="g1.png" id="driverGear" width="100" style="position:absolute;left:100px;top:50px" radius="10" /></td>
-			<td valign="center"><img src="g3.png" id="gear2" width="200" style="position:absolute;left:300px;top:50px" radius="20"/></td>
-		
-			</tr>
-		</table>
-		
+		<br><br>		<br>		<br>		<br>
+		<div id="gears">
+			<img src="g1.png" id="driverGear" radius="10" class="driver" />
+			<!-- child gears will be created on the run -->
+		</div>
+
 		
 	</body>
 </html>
