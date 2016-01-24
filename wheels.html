@@ -43,20 +43,14 @@
 				"wheels" : appendAndCaptureWheels(numWheels)
 			};
 
+			$( '.wheel' ).each( function(i,wheel){
+					$(wheel).rotate({angle: 0});
+			});
 
-			for (var i = 0; i < $gears.wheels.length; i++) {
-				$gears.wheels[i].rotate({angle: 0});
-			}
 
 			$gears.$driver.rotate({angle:0});
 
 			var xOriginalDriverGear = $gears.$driver.position().left
-			console.log( 'xOriginalDriverGear' )
-			console.log( xOriginalDriverGear )
-			
-			
-			
-			
 			
 
 			$gears.$driver.rotate({bind:{
@@ -66,7 +60,7 @@
 					$(this).rotate({
 						angle: 0,
 						animateTo: 360 * 10,
-						duration:(10 * 100 * 8) * 10 ,
+						duration:  (10 * 100 * 8) * 10 ,
 						easing: function(x, t, b, c, d) { return b+(t/d)*c ; },
 						step: function( a ){
 							var angleDelta = $obj.getRotateAngle()[0] - lastAngle
@@ -81,21 +75,25 @@
 
 			// each wheel gear gets the ted magic formula referencing the gear on the left.
 			// Obviously wheels[0] needs to look at the driver gear
-			for (var i = 0; i < $gears.wheels.length; i++) {
-				$gears.wheels[i].observe('rotate', function(e, d) {
+			$('.wheel').each( function( i, wheel ) {
+				$(wheel).observe('rotate', function(e, d) {
 					var angleDelta = (d.arcLength/(2 * parseFloat($(this).attr('radius')) * Math.PI)) * 360;
+					
+					// Choose angle delta direction.  It will alternate 
+					angleDelta = angleDelta * [1,-1][ i % 2 ]
+					
 					var newAngle = $(this).getRotateAngle()[0] - angleDelta;
 
 					var myAngle = -1 * newAngle % 360;
 					var leftGear = i == 0 ? $gears.$driver : $gears.wheels[i - 1];
 					var leftGearAngle = leftGear.getRotateAngle()[0] % 360;
 					if (GearsLineUp(myAngle, leftGearAngle)) {
-						alert('got one');
+						console.log('got one');
 					}
 
 					$(this).rotate({angle: newAngle});
 				});
-			}
+			} );
 
 		$('#grow' ).click( function(){
 				
