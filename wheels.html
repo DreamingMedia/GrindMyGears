@@ -15,7 +15,7 @@
 }
 
 		function GearsLineUp(myAngle, leftGearAngle) {
-			return Math.abs( 270 - myAngle ) < 2  &&  Math.abs( 270 - leftGearAngle ) < 2
+			return Math.abs( 270 - myAngle ) < 2  &&  Math.abs( 270 - leftGearAngle ) < 20
 		}
 		$( document ).ready( function(){
 
@@ -43,7 +43,7 @@
 			function addWheel(){				
 				$("#gears").append('<img src="g3.png" id="gear" radius="20" class="wheel"/>')
 				$newWheel = $('.wheel').last()
-				setRadius( $newWheel, Math.floor((Math.random() * 10) + 3) )
+				setRadius( $newWheel, Math.floor((Math.random() * 10) + 3) * 0 + 20 )
 				$newWheel.rotate({angle: 0})
 			}
 
@@ -68,8 +68,8 @@
 					var lastAngle = $obj.getRotateAngle()[0];
 					$(this).rotate({
 						angle: 0,
-						animateTo: 360 * 10,
-						duration:  (10 * 100 * 8) * 10 ,
+						animateTo: 200 , ///360 * 10,
+						duration: 2000 , //(10 * 100 * 8) * 10 ,
 						easing: function(x, t, b, c, d) { return b+(t/d)*c ; },
 						step: function( a ){
 							var angleDelta = $obj.getRotateAngle()[0] - lastAngle
@@ -92,16 +92,24 @@
 					// Choose angle delta direction.  It will alternate 
 					angleDelta = angleDelta * [1,-1][ i % 2 ]
 					
-					var newAngle = $(this).getRotateAngle()[0] - angleDelta;
+					var newAngle = $(this).getRotateAngle()[0] - angleDelta
 
-					/*
-					var myAngle = -1 * newAngle % 360;
-					var leftGear = i == 0 ? $gears.$driver : $gears.wheels[i - 1];
-					var leftGearAngle = leftGear.getRotateAngle()[0] % 360;
+					
+					var myAngle = -1 * newAngle % 360
+
+if ( i > 0 ) {
+var leftGear= $('.wheel').eq( i - 1 )
+} else {
+var leftGear = $("#driverGear")
+}
+					var leftGearAngle = leftGear.getRotateAngle()[0] % 360
+console.log( '---- ' + i )
+console.log( myAngle )
+console.log( leftGearAngle )
 					if (GearsLineUp(myAngle, leftGearAngle)) {
-						console.log('got one');
+						alert('got one');
 					}
-					*/
+					
 
 					$(wheel).rotate({angle: newAngle});
 				})
